@@ -63,62 +63,38 @@ class ResumeScannerTester:
             await self.session.close()
     
     def _create_test_pdf_content(self) -> bytes:
-        """Create a simple test PDF content"""
-        # This creates a minimal PDF structure for testing
-        pdf_content = b"""%PDF-1.4
-1 0 obj
-<<
-/Type /Catalog
-/Pages 2 0 R
->>
-endobj
-
-2 0 obj
-<<
-/Type /Pages
-/Kids [3 0 R]
-/Count 1
->>
-endobj
-
-3 0 obj
-<<
-/Type /Page
-/Parent 2 0 R
-/MediaBox [0 0 612 792]
-/Contents 4 0 R
->>
-endobj
-
-4 0 obj
-<<
-/Length 44
->>
-stream
-BT
-/F1 12 Tf
-72 720 Td
-(John Doe Resume) Tj
-ET
-endstream
-endobj
-
-xref
-0 5
-0000000000 65535 f 
-0000000009 00000 n 
-0000000058 00000 n 
-0000000115 00000 n 
-0000000206 00000 n 
-trailer
-<<
-/Size 5
-/Root 1 0 R
->>
-startxref
-299
-%%EOF"""
-        return pdf_content
+        """Create a proper test PDF content using reportlab"""
+        try:
+            from reportlab.pdfgen import canvas
+            from reportlab.lib.pagesizes import letter
+            import io
+            
+            buffer = io.BytesIO()
+            p = canvas.Canvas(buffer, pagesize=letter)
+            
+            # Add realistic resume content
+            resume_text = self._create_realistic_resume_text()
+            
+            # Split text into lines and add to PDF
+            lines = resume_text.split('\n')
+            y_position = 750
+            
+            for line in lines[:30]:  # Limit to first 30 lines to fit on page
+                if y_position < 50:  # Start new page if needed
+                    p.showPage()
+                    y_position = 750
+                
+                p.drawString(50, y_position, line.strip()[:80])  # Limit line length
+                y_position -= 20
+            
+            p.save()
+            buffer.seek(0)
+            return buffer.getvalue()
+            
+        except ImportError:
+            # Fallback to simple text-based PDF if reportlab not available
+            resume_text = self._create_realistic_resume_text()
+            return f"PDF Content:\n{resume_text}".encode('utf-8')
     
     def _create_realistic_resume_text(self) -> str:
         """Create realistic resume text for testing"""
