@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { Menu, X } from "lucide-react";
+import { Brain, Upload, FileText, History, Menu, X } from "lucide-react";
 
-const Header = () => {
+const Header = ({ currentSection, setCurrentSection, scanCount }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -14,34 +14,28 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-      setIsMobileMenuOpen(false);
-    }
-  };
-
   const navItems = [
-    { label: "Overview", id: "overview" },
-    { label: "Features", id: "features" },
-    { label: "Tech Stack", id: "tech-stack" },
-    { label: "Results", id: "results" },
-    { label: "Demo", id: "demo" },
-    { label: "Contact", id: "contact" }
+    { id: 'upload', label: 'Upload Resume', icon: Upload },
+    { id: 'history', label: `History ${scanCount > 0 ? `(${scanCount})` : ''}`, icon: History },
   ];
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-transparent'
+      isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200' : 'bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div 
-            onClick={() => scrollToSection("hero")}
-            className="text-xl font-light cursor-pointer hover:scale-105 transition-transform duration-200"
+            onClick={() => setCurrentSection('upload')}
+            className="flex items-center space-x-3 cursor-pointer hover:scale-105 transition-transform duration-200"
           >
-            Resume Scanner AI
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <Brain size={24} className="text-white" />
+            </div>
+            <div>
+              <div className="text-xl font-bold text-gray-900">AI Resume Scanner</div>
+              <div className="text-xs text-gray-500">Powered by GPT-4o</div>
+            </div>
           </div>
 
           {/* Desktop Navigation */}
@@ -49,20 +43,35 @@ const Header = () => {
             {navItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className="text-sm font-normal hover:-translate-y-0.5 transition-all duration-200 hover:text-gray-600"
+                onClick={() => {
+                  setCurrentSection(item.id);
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                  currentSection === item.id
+                    ? 'bg-blue-100 text-blue-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
               >
-                {item.label}
+                <item.icon size={18} />
+                <span className="font-medium">{item.label}</span>
               </button>
             ))}
           </nav>
 
-          <Button
-            onClick={() => scrollToSection("contact")}
-            className="hidden md:inline-flex bg-black text-white hover:bg-gray-800 transition-all duration-200 hover:scale-105"
-          >
-            Get In Touch
-          </Button>
+          <div className="hidden md:flex items-center space-x-4">
+            <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span>AI Service Active</span>
+            </div>
+            <Button
+              onClick={() => setCurrentSection('upload')}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-200 hover:scale-105 shadow-lg"
+            >
+              <Upload size={18} className="mr-2" />
+              New Scan
+            </Button>
+          </div>
 
           {/* Mobile Menu Button */}
           <button
@@ -80,17 +89,29 @@ const Header = () => {
               {navItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className="text-left text-sm font-normal py-2 hover:text-gray-600 transition-colors duration-200"
+                  onClick={() => {
+                    setCurrentSection(item.id);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center space-x-2 px-4 py-3 rounded-lg transition-all duration-200 ${
+                    currentSection === item.id
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
                 >
-                  {item.label}
+                  <item.icon size={18} />
+                  <span className="font-medium">{item.label}</span>
                 </button>
               ))}
               <Button
-                onClick={() => scrollToSection("contact")}
-                className="mt-4 bg-black text-white hover:bg-gray-800"
+                onClick={() => {
+                  setCurrentSection('upload');
+                  setIsMobileMenuOpen(false);
+                }}
+                className="mt-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white"
               >
-                Get In Touch
+                <Upload size={18} className="mr-2" />
+                New Scan
               </Button>
             </div>
           </nav>
