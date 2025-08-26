@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import Hero from "./Hero";
 import Overview from "./Overview";
-import WhyItMatters from "./WhyItMatters";
 import Features from "./Features";
 import TechStack from "./TechStack";
 import Results from "./Results";
@@ -22,7 +21,6 @@ const ProjectShowcase = () => {
       <Header />
       <Hero />
       <Overview />
-      <WhyItMatters />
       <Features />
       <TechStack />
       <Results />
