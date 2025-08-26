@@ -1,23 +1,27 @@
 import React from "react";
-import { Github, Linkedin, Mail, ArrowUp } from "lucide-react";
+import { Brain, Github, Linkedin, Mail, Heart } from "lucide-react";
 
 const Footer = () => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-black text-white py-16">
+    <footer className="bg-gray-900 text-white py-12">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Brand */}
           <div>
-            <h3 className="text-2xl font-light mb-4">Resume Scanner AI</h3>
-            <p className="text-gray-400 mb-6">
-              Intelligent Resume Screening using AI & NLP. 
-              Transforming the hiring process with 87% accuracy.
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <Brain size={24} className="text-white" />
+              </div>
+              <div>
+                <div className="text-xl font-bold">AI Resume Scanner</div>
+                <div className="text-xs text-gray-400">Powered by GPT-4o</div>
+              </div>
+            </div>
+            <p className="text-gray-400 mb-4">
+              Intelligent resume screening using cutting-edge AI technology. 
+              Get 87% accuracy in matching resumes to job descriptions.
             </p>
             <div className="flex space-x-4">
               <a
@@ -45,50 +49,39 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Project Links */}
+          {/* Features */}
           <div>
-            <h4 className="text-lg font-medium mb-4">Project</h4>
+            <h4 className="text-lg font-semibold mb-4">Features</h4>
             <ul className="space-y-3 text-gray-400">
-              <li>
-                <a href="#overview" className="hover:text-white transition-colors duration-200">
-                  Overview
-                </a>
-              </li>
-              <li>
-                <a href="#features" className="hover:text-white transition-colors duration-200">
-                  Features
-                </a>
-              </li>
-              <li>
-                <a href="#tech-stack" className="hover:text-white transition-colors duration-200">
-                  Technology Stack
-                </a>
-              </li>
-              <li>
-                <a href="#results" className="hover:text-white transition-colors duration-200">
-                  Results
-                </a>
-              </li>
-              <li>
-                <a href="#demo" className="hover:text-white transition-colors duration-200">
-                  Demo
-                </a>
-              </li>
+              <li>AI-Powered Resume Analysis</li>
+              <li>Job Description Matching</li>
+              <li>Skills & Experience Extraction</li>
+              <li>87% Match Accuracy</li>
+              <li>PDF & DOCX Support</li>
+              <li>Instant Results</li>
             </ul>
           </div>
 
-          {/* Tech Stack */}
+          {/* Technology */}
           <div>
-            <h4 className="text-lg font-medium mb-4">Built With</h4>
-            <div className="flex flex-wrap gap-2">
-              {['Python', 'GPT Models', 'spaCy', 'NLP', 'FastAPI', 'Render'].map((tech, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-gray-800 rounded-full text-sm text-gray-300"
-                >
-                  {tech}
-                </span>
-              ))}
+            <h4 className="text-lg font-semibold mb-4">Built With</h4>
+            <div className="space-y-3">
+              <div className="flex flex-wrap gap-2">
+                {['React', 'FastAPI', 'GPT-4o', 'MongoDB', 'TailwindCSS'].map((tech, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-gray-800 rounded-full text-sm text-gray-300"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-4">
+                <div className="flex items-center space-x-2 text-sm">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-gray-400">AI Service Active</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -97,24 +90,22 @@ const Footer = () => {
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-gray-400 text-sm">
-              © {currentYear} Sonaly Jain. Built with passion for AI innovation.
+              © {currentYear} AI Resume Scanner. Built by Sonaly Jain.
             </div>
             
-            <button
-              onClick={scrollToTop}
-              className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors duration-200"
-            >
-              <ArrowUp size={16} />
-              <span className="text-sm">Back to top</span>
-            </button>
+            <div className="flex items-center space-x-2 text-gray-400 text-sm">
+              <span>Made with</span>
+              <Heart size={16} className="text-red-500" />
+              <span>for better hiring</span>
+            </div>
           </div>
         </div>
 
-        {/* Bottom accent */}
-        <div className="mt-8 pt-8 text-center">
+        {/* Project Info */}
+        <div className="mt-8 pt-8 border-t border-gray-800 text-center">
           <div className="inline-flex items-center space-x-2 text-gray-500 text-sm">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span>System deployed and ready for integration</span>
+            <Brain size={16} className="text-blue-400" />
+            <span>Powered by OpenAI GPT-4o • Deployed on Render • Open Source</span>
           </div>
         </div>
       </div>
