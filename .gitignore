@@ -31,6 +31,9 @@ dist/
 dist
 
 # Environment files (comprehensive coverage)
+.env
+.env.*
+!.env.example
 
 *token.json*
 *credentials.json*
@@ -78,3 +81,11 @@ agenthub/agents/youtube/db
 
 # Mobile development
 android-sdk/ 
+# Test caches
+.pytest_cache/
+
+# Locally stored resume originals (personal data)
+backend/storage/
+
+# Database backups (contain personal data)
+backend/backups/

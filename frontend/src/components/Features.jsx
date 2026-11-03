@@ -30,7 +30,7 @@ const Features = () => {
       description: "Advanced NLP techniques extract structured data from unstructured resume formats",
       details: [
         "Extract skills, education, and experience sections",
-        "Handle multiple resume formats (PDF, DOC, TXT)",
+        "Handle multiple resume formats (PDF, DOCX)",
         "Intelligent section recognition and categorization",
         "Clean and normalize extracted data"
       ]

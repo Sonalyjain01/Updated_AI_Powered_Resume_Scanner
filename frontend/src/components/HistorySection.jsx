@@ -1,5 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "./ui/button";
+import { scanKeys, useDeleteScan, useScanHistory } from "../hooks/useScans";
 import { 
   History, 
   FileText, 
@@ -11,20 +14,29 @@ import {
   Eye
 } from "lucide-react";
 
-const HistorySection = ({ scanHistory, onRefresh, onSelectScan }) => {
+const HistorySection = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { data, error, refetch, isFetching } = useScanHistory();
+  const deleteScan = useDeleteScan();
   const [searchTerm, setSearchTerm] = useState("");
-  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const scanHistory = data || [];
+  const historyError = error?.message || deleteScan.error?.message || null;
+  const isRefreshing = isFetching;
+  const onRefresh = () => refetch();
+
+  const onSelectScan = (scan) => {
+    queryClient.setQueryData(scanKeys.detail(scan.id), scan);
+    navigate(`/app/results/${scan.id}`);
+  };
 
   const filteredHistory = scanHistory.filter(scan =>
     scan.filename.toLowerCase().includes(searchTerm.toLowerCase()) ||
     scan.job_description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await onRefresh();
-    setTimeout(() => setIsRefreshing(false), 500);
-  };
+  const handleRefresh = () => onRefresh();
 
   const getScoreColor = (score) => {
     if (score >= 80) return "text-green-600 bg-green-100";
@@ -42,19 +54,8 @@ const HistorySection = ({ scanHistory, onRefresh, onSelectScan }) => {
     });
   };
 
-  const handleDeleteScan = async (scanId) => {
-    try {
-      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-      const response = await fetch(`${BACKEND_URL}/api/scan/${scanId}`, {
-        method: 'DELETE',
-      });
-      
-      if (response.ok) {
-        onRefresh(); // Refresh the list
-      }
-    } catch (error) {
-      console.error('Error deleting scan:', error);
-    }
+  const handleDeleteScan = (scanId) => {
+    deleteScan.mutate(scanId);
   };
 
   return (
@@ -115,7 +116,14 @@ const HistorySection = ({ scanHistory, onRefresh, onSelectScan }) => {
         </div>
 
         {/* History List */}
-        {filteredHistory.length === 0 ? (
+        {historyError && (
+          <div role="alert" className="flex items-center justify-between gap-4 bg-red-50 border border-red-300 text-red-900 rounded-xl p-4 mb-6">
+            <p>{historyError}</p>
+            <Button variant="outline" size="sm" onClick={onRefresh}>Try again</Button>
+          </div>
+        )}
+
+        {filteredHistory.length === 0 && !historyError ? (
           <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
             <History size={48} className="mx-auto text-gray-300 mb-4" />
             <h3 className="text-xl font-semibold text-gray-600 mb-2">
@@ -171,6 +179,11 @@ const HistorySection = ({ scanHistory, onRefresh, onSelectScan }) => {
                     <div className={`px-4 py-2 rounded-lg font-semibold ${getScoreColor(scan.match_score)}`}>
                       {Math.round(scan.match_score)}%
                     </div>
+                    {scan.is_fallback && (
+                      <span title={scan.fallback_notice} className="px-2 py-1 rounded-md text-xs font-medium bg-amber-100 text-amber-800">
+                        Estimate
+                      </span>
+                    )}
 
                     {/* Actions */}
                     <div className="flex space-x-2">

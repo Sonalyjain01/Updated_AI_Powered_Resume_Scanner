@@ -1,8 +1,14 @@
 import React, { useState, useRef } from "react";
 import { Button } from "./ui/button";
 import { Upload, FileText, Loader2, AlertCircle, CheckCircle } from "lucide-react";
+import { useRunScan } from "../hooks/useScans";
+import ScoringCriteriaPanel, { DEFAULT_CRITERIA, criteriaToPayload, isDefaultCriteria } from "./ScoringCriteriaPanel";
 
-const UploadSection = ({ onScanComplete, isLoading, setIsLoading }) => {
+const UploadSection = ({ onScanComplete }) => {
+  const scanMutation = useRunScan();
+  const [jobStatus, setJobStatus] = useState(null);
+  const [criteria, setCriteria] = useState(DEFAULT_CRITERIA);
+  const isLoading = scanMutation.isPending;
   const [resumeFile, setResumeFile] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
   const [dragActive, setDragActive] = useState(false);
@@ -73,39 +79,33 @@ const UploadSection = ({ onScanComplete, isLoading, setIsLoading }) => {
       return;
     }
 
-    setIsLoading(true);
+    const weightTotal = Number(criteria.skillsWeight) + Number(criteria.experienceWeight) + Number(criteria.educationWeight);
+    if (weightTotal <= 0) {
+      setError("At least one scoring weight must be above zero.");
+      return;
+    }
+
     setError("");
 
     try {
-      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-      const formData = new FormData();
-      formData.append('resume_file', resumeFile);
-      formData.append('job_description', jobDescription);
-
-      const response = await fetch(`${BACKEND_URL}/api/scan_resume`, {
-        method: 'POST',
-        body: formData,
+      const result = await scanMutation.mutateAsync({
+        resumeFile,
+        jobDescription,
+        criteria: isDefaultCriteria(criteria) ? undefined : criteriaToPayload(criteria),
+        onStatus: setJobStatus,
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Scan failed');
-      }
-
-      const result = await response.json();
       onScanComplete(result);
-      
+
       // Reset form
       setResumeFile(null);
       setJobDescription("");
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-
     } catch (err) {
       setError(err.message || 'An error occurred during scanning');
     } finally {
-      setIsLoading(false);
+      setJobStatus(null);
     }
   };
 
@@ -203,6 +203,8 @@ const UploadSection = ({ onScanComplete, isLoading, setIsLoading }) => {
             </div>
           </div>
 
+          <ScoringCriteriaPanel value={criteria} onChange={setCriteria} disabled={isLoading} />
+
           {/* Error Message */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center space-x-3">
@@ -237,7 +239,13 @@ const UploadSection = ({ onScanComplete, isLoading, setIsLoading }) => {
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
               <div className="flex items-center space-x-3 mb-4">
                 <Loader2 size={20} className="text-blue-600 animate-spin" />
-                <p className="text-blue-700 font-semibold">AI Analysis in Progress</p>
+                <p className="text-blue-700 font-semibold" role="status">
+                  {jobStatus?.status === "queued"
+                    ? jobStatus.queue_position > 0
+                      ? `Waiting in line (${jobStatus.queue_position} ahead of you)`
+                      : "Waiting to start"
+                    : "AI Analysis in Progress"}
+                </p>
               </div>
               <div className="space-y-2 text-sm text-blue-600">
                 <p>• Extracting text from resume...</p>

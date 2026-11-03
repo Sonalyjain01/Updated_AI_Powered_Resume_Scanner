@@ -1,30 +1,42 @@
-fastapi==0.110.1
-uvicorn==0.25.0
-boto3>=1.34.129
-requests-oauthlib>=2.0.0
-cryptography>=42.0.8
-python-dotenv>=1.0.1
-pymongo==4.5.0
-pydantic>=2.6.4
-email-validator>=2.2.0
-pyjwt>=2.10.1
-passlib>=1.7.4
-tzdata>=2024.2
-motor==3.3.1
-pytest>=8.0.0
-black>=24.1.1
-isort>=5.13.2
-flake8>=7.0.0
-mypy>=1.8.0
-python-jose>=3.3.0
-requests>=2.31.0
-pandas>=2.2.0
-numpy>=1.26.0
-python-multipart>=0.0.9
-jq>=1.6.0
-typer>=0.9.0
+# Runtime dependencies only. Every package here is imported by the backend.
+# Test and lint tools are in requirements-dev.txt.
+# Versions are the ones the test suite runs against; bump them deliberately.
+
+# Web framework
+fastapi==0.115.0
+uvicorn==0.30.6
+python-multipart==0.0.32   # file upload parsing
+pydantic==2.9.2
+python-dotenv==1.0.1
+
+# Database
+pymongo==4.19.0
+motor==3.7.1
+
+# Resume parsing
+PyMuPDF==1.28.2            # PDF text
+python-docx==1.2.0         # DOCX text
+pytesseract==0.3.13        # OCR for scanned PDFs; also needs the Tesseract program
+                           #   (Debian/Ubuntu: apt install tesseract-ocr)
+Pillow==12.3.0             # image handling for OCR
+
+# Accounts
+argon2-cffi==25.1.0        # password hashing
+PyJWT==2.9.0               # access tokens
+email-validator==2.2.0     # EmailStr in the sign-up form
+
+# Backups
+cryptography==49.0.0       # encrypts backup files (Fernet)
+
+# Original-file storage (S3, Cloudflare R2, MinIO)
+boto3==1.43.89
+
+# AI provider adapter (llm_provider.py). Not on public PyPI: install it from the
+# Emergent package index. Left unpinned because the available versions are not
+# visible from here; pin it once you know which one you deploy.
 emergentintegrations>=0.1.0
-PyMuPDF>=1.23.0
-python-docx>=0.8.11
-spacy>=3.7.0
-sentence-transformers>=2.2.2
+
+# Removed as unused (add back when the feature that needs it is built):
+#   auth:     passlib, python-jose
+#   http:     requests, requests-oauthlib
+#   other:    pandas, numpy, spacy, sentence-transformers, jq, typer, tzdata

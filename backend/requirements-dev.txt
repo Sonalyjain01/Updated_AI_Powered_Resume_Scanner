@@ -1,0 +1,17 @@
+-r requirements.txt
+
+# Tests: run with `pytest` from the backend directory
+pytest==8.3.4
+pytest-asyncio==0.24.0
+httpx==0.28.1              # FastAPI TestClient
+mongomock-motor==0.0.36    # in-memory MongoDB for tests
+moto[s3]==5.2.4            # fake S3 for storage tests
+
+# Integration script (../backend_test.py) against a running server
+aiohttp>=3.9.0
+
+# Linting
+black>=24.1.1
+isort>=5.13.2
+flake8>=7.0.0
+mypy>=1.8.0

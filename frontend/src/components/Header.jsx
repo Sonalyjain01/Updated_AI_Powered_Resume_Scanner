@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { Brain, Upload, FileText, History, Menu, X } from "lucide-react";
+import { Brain, Upload, FileText, History, Menu, X, LogOut, User } from "lucide-react";
 
-const Header = ({ currentSection, setCurrentSection, scanCount }) => {
+// In-app header. `onLogout` is passed only when sign-in is enabled.
+const Header = ({ currentSection, setCurrentSection, scanCount, onLogout, showAccount }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -17,6 +18,7 @@ const Header = ({ currentSection, setCurrentSection, scanCount }) => {
   const navItems = [
     { id: 'upload', label: 'Upload Resume', icon: Upload },
     { id: 'history', label: `History ${scanCount > 0 ? `(${scanCount})` : ''}`, icon: History },
+    ...(showAccount ? [{ id: 'account', label: 'Account', icon: User }] : []),
   ];
 
   return (
@@ -71,6 +73,12 @@ const Header = ({ currentSection, setCurrentSection, scanCount }) => {
               <Upload size={18} className="mr-2" />
               New Scan
             </Button>
+            {onLogout && (
+              <Button onClick={onLogout} variant="outline">
+                <LogOut size={18} className="mr-2" />
+                Sign out
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}

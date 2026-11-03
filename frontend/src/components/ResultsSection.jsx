@@ -1,4 +1,5 @@
 import React from "react";
+import ScoreBreakdown from "./ScoreBreakdown";
 import { Button } from "./ui/button";
 import { 
   Target, 
@@ -9,7 +10,8 @@ import {
   Zap,
   Download,
   Share2,
-  ArrowLeft
+  ArrowLeft,
+  AlertTriangle
 } from "lucide-react";
 
 const ResultsSection = ({ scanResult, onNewScan }) => {
@@ -61,6 +63,36 @@ const ResultsSection = ({ scanResult, onNewScan }) => {
           <p className="text-gray-600">Analysis completed on {formatDate(scanResult.created_at)}</p>
         </div>
 
+        {scanResult.saved === false && (
+          <div role="alert" className="flex items-start gap-3 bg-amber-50 border border-amber-300 text-amber-900 rounded-xl p-4 mb-6">
+            <AlertTriangle size={20} className="mt-0.5 shrink-0" />
+            <div>
+              <p className="font-semibold">Not saved to history</p>
+              <p className="text-sm">The analysis finished, but the database was unavailable, so this result will not appear in your history. Export or note it now.</p>
+            </div>
+          </div>
+        )}
+
+        {scanResult.ocr_used && (
+          <div role="status" className="flex items-start gap-3 bg-blue-50 border border-blue-200 text-blue-900 rounded-xl p-4 mb-6">
+            <FileText size={20} className="mt-0.5 shrink-0" />
+            <div>
+              <p className="font-semibold">Read from a scanned document</p>
+              <p className="text-sm">This resume had no selectable text, so it was read with text recognition. Some words may be missed or misread, which can lower the match score.</p>
+            </div>
+          </div>
+        )}
+
+        {scanResult.is_fallback && (
+          <div role="alert" className="flex items-start gap-3 bg-amber-50 border border-amber-300 text-amber-900 rounded-xl p-4 mb-6">
+            <AlertTriangle size={20} className="mt-0.5 shrink-0" />
+            <div>
+              <p className="font-semibold">Estimated score, not a full AI analysis</p>
+              <p className="text-sm">{scanResult.fallback_notice}</p>
+            </div>
+          </div>
+        )}
+
         {/* Match Score Card */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
           <div className="text-center">
@@ -87,6 +119,8 @@ const ResultsSection = ({ scanResult, onNewScan }) => {
             </div>
           </div>
         </div>
+
+        <ScoreBreakdown breakdown={scanResult.breakdown} matchScore={scanResult.match_score} />
 
         {/* Detailed Analysis */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
